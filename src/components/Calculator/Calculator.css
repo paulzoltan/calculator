@@ -1,0 +1,21 @@
+.calculator__dial {
+  margin: 5em auto;
+  width: 20em;
+  display: grid;
+  grid-template-rows: repeat(4, auto);
+  grid-template-columns: repeat(4, auto);
+  gap: 0.5em;
+}
+.calculator__dial__btn {
+  background-color: rgb(214, 217, 227);
+  border-radius: 0.25em;
+  padding: 0.4em;
+  text-align: center;
+}
+.calculator__dial__btn:active {
+  outline: 1px solid rgb(141, 141, 149);
+  box-shadow: 0 0 0.5em 0em #0005;
+}
+.calculator__dial__btn:hover {
+  cursor: pointer;
+}
