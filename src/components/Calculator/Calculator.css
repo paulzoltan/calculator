@@ -2,8 +2,8 @@
   margin: 5em auto;
   width: 20em;
   display: grid;
-  grid-template-rows: repeat(4, auto);
-  grid-template-columns: repeat(4, auto);
+  grid-template-rows: repeat(5, auto);
+  grid-template-columns: repeat(5, auto);
   gap: 0.5em;
 }
 .calculator__dial__btn {
