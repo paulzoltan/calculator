@@ -1,63 +1,129 @@
 import './Calculator.css'
 import { useState } from 'react'
 import { evaluate } from 'mathjs'
+import DisplayMath from '../DisplayMath'
 
 const Calculator = () => {
   const [expression, setExpression] = useState('')
+
+  const isLastElementIn = (arr: string[]) =>
+    arr.includes(expression[expression.length - 1])
+
+  const isPenultimateElementIn = (arr: string[]) =>
+    arr.includes(expression[expression.length - 2])
+
   const skip = () => {}
 
-  const add = (str: string) => {
+  const canBecomeValid = (expr: string) => {
     try {
-      evaluate(expression + str)
-      setExpression((e) => e + str)
+      evaluate(expr)
+      return true
     } catch (err: unknown) {
       if (err instanceof Error) {
+        console.log(err.message)
+        console.log(expr.length)
         if (
           err.message.startsWith('Unexpected end of expression') ||
-          err.message.startsWith('Parenthesis ) expected')
+          err.message.startsWith(
+            `Parenthesis ) expected (char ${expr.length + 1})`
+          )
         ) {
-          setExpression((e) => e + str)
+          return true
         }
       }
     }
   }
 
+  const setExpressionIfCanBecomeValid = (expression: string) => {
+    if (canBecomeValid(expression)) {
+      setExpression(expression)
+    }
+  }
+
+  const append = (element: string) => {
+    setExpressionIfCanBecomeValid(expression + element)
+  }
+
+  const replaceLastElement = (element: string) => {
+    const newExpression = expression.slice(0, -1) + element
+    setExpressionIfCanBecomeValid(newExpression)
+  }
+
+  const appendOperator = (element: string) => {
+    if (isLastElementIn(['+', '-', '*', '/'])) {
+      replaceLastElement(element)
+    } else {
+      append(element)
+    }
+  }
+
+  const appendMinus = (element: string) => {
+    if (isLastElementIn(['+', '-'])) {
+      replaceLastElement(element)
+    } else {
+      append(element)
+    }
+  }
+
+  const appendPlus = (element: string) => {
+    if (isLastElementIn(['+', '*', '/'])) {
+      replaceLastElement(element)
+    } else if (isLastElementIn(['-'])) {
+      if (!isPenultimateElementIn(['/', '*'])) {
+        replaceLastElement(element)
+      }
+    } else {
+      append(element)
+    }
+  }
+  const sqr = () => {
+    append('^')
+  }
+  const sqrt = () => {
+    append('sqrt(')
+  }
+
   const actions: [string | JSX.Element, (...args: any[]) => void][] = [
     ['', skip],
-    ['(', () => add('(')],
-    [')', () => add(')')],
+    ['(', () => append('(')],
+    [')', () => append(')')],
     ['%', skip],
     ['C', () => setExpression('')],
     ['', skip],
-    ['7', () => add('7')],
-    ['8', () => add('8')],
-    ['9', () => add('9')],
-    ['÷', () => add('/')],
+    ['7', () => append('7')],
+    ['8', () => append('8')],
+    ['9', () => append('9')],
+    ['÷', () => appendOperator('/')],
     ['', skip],
-    ['4', () => add('4')],
-    ['5', () => add('5')],
-    ['6', () => add('6')],
-    ['×', () => add('*')],
-    ['√', skip],
-    ['1', () => add('1')],
-    ['2', () => add('2')],
-    ['3', () => add('3')],
-    ['-', () => add('-')],
+    ['4', () => append('4')],
+    ['5', () => append('5')],
+    ['6', () => append('6')],
+    ['×', () => appendOperator('*')],
+    ['√', () => sqrt()],
+    ['1', () => append('1')],
+    ['2', () => append('2')],
+    ['3', () => append('3')],
+    ['-', () => appendMinus('-')],
     [
       <>
         x<sup>2</sup>
       </>,
-      skip,
+      () => sqr(),
     ],
-    ['0', () => add('0')],
-    ['.', skip],
+    ['0', () => append('0')],
+    ['.', () => append('.')],
     ['=', () => console.log(evaluate(expression))],
-    ['+', () => add('+')],
+    ['+', () => appendPlus('+')],
   ]
 
   return (
     <div className='calculator'>
-      {expression}
+      <div className='calculator__display'>
+        <div className='calculator__display__previous'>{expression}</div>
+        <div className='calculator__display__current'>
+          <DisplayMath expression={expression} />
+        </div>
+      </div>
       <div className='calculator__dial'>
         {actions.map(
           (
