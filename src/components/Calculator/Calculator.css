@@ -9,7 +9,7 @@
   padding: 1em 0em;
 }
 .calculator__display__previous {
-  color: rgb(141, 141, 149);
+  color: #8d8d95;
 }
 .calculator__display__current {
   font-size: 2em;
@@ -21,15 +21,23 @@
   gap: 0.5em;
 }
 .calculator__dial__btn {
-  background-color: rgb(214, 217, 227);
+  background-color: #d6d9e3;
   border-radius: 0.25em;
   padding: 0.4em;
   text-align: center;
 }
 .calculator__dial__btn:active {
-  outline: 1px solid rgb(141, 141, 149);
+  outline: 1px solid #8d8d95;
   box-shadow: 0 0 0.5em 0 #0005;
 }
 .calculator__dial__btn:hover {
   cursor: pointer;
+}
+.calculator__dial__btn--digit,
+.calculator__dial__btn--point {
+  background-color: #eaecf2;
+}
+.calculator__dial__btn--equals-sign {
+  background-color: #2255ff;
+  color: #fff;
 }

@@ -2,6 +2,7 @@ import './Calculator.css'
 import { useState } from 'react'
 import { evaluate } from 'mathjs'
 import DisplayMath from '../DisplayMath'
+import classNames from 'classnames'
 
 const Calculator = () => {
   const [expression, setExpression] = useState('')
@@ -83,26 +84,26 @@ const Calculator = () => {
     append('sqrt(')
   }
 
-  const actions: [string | JSX.Element, (...args: any[]) => void][] = [
+  const actions: [string | JSX.Element, (...args: any[]) => void, string?][] = [
     ['', skip],
     ['(', () => append('(')],
     [')', () => append(')')],
     ['%', skip],
     ['C', () => setExpression('')],
     ['', skip],
-    ['7', () => append('7')],
-    ['8', () => append('8')],
-    ['9', () => append('9')],
+    ['7', () => append('7'), 'digit'],
+    ['8', () => append('8'), 'digit'],
+    ['9', () => append('9'), 'digit'],
     ['÷', () => appendOperator('/')],
     ['', skip],
-    ['4', () => append('4')],
-    ['5', () => append('5')],
-    ['6', () => append('6')],
+    ['4', () => append('4'), 'digit'],
+    ['5', () => append('5'), 'digit'],
+    ['6', () => append('6'), 'digit'],
     ['×', () => appendOperator('*')],
     ['√', () => sqrt()],
-    ['1', () => append('1')],
-    ['2', () => append('2')],
-    ['3', () => append('3')],
+    ['1', () => append('1'), 'digit'],
+    ['2', () => append('2'), 'digit'],
+    ['3', () => append('3'), 'digit'],
     ['-', () => appendMinus('-')],
     [
       <>
@@ -110,9 +111,9 @@ const Calculator = () => {
       </>,
       () => sqr(),
     ],
-    ['0', () => append('0')],
-    ['.', () => append('.')],
-    ['=', () => console.log(evaluate(expression))],
+    ['0', () => append('0'), 'digit'],
+    ['.', () => append('.'), 'point'],
+    ['=', () => console.log(evaluate(expression)), 'equals-sign'],
     ['+', () => appendPlus('+')],
   ]
 
@@ -127,14 +128,17 @@ const Calculator = () => {
       <div className='calculator__dial'>
         {actions.map(
           (
-            [symbol, handleClick]: [
+            [symbol, handleClick, className]: [
               symbol: string | JSX.Element,
-              handleClick: (...args: any[]) => void
+              handleClick: (...args: any[]) => void,
+              className?: string
             ],
             index
           ) => (
             <button
-              className='btn calculator__dial__btn'
+              className={classNames('btn', 'calculator__dial__btn', {
+                [`calculator__dial__btn--${className}`]: className,
+              })}
               onClick={handleClick}
               key={index}
             >
