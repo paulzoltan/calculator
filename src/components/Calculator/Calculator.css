@@ -6,13 +6,17 @@
 }
 .calculator__display {
   text-align: right;
-  padding: 1em 0em;
+  margin-bottom: 2.25em;
 }
 .calculator__display__previous {
   color: #8d8d95;
+  min-height: 1.25em;
+  line-height: 1.25;
 }
 .calculator__display__current {
   font-size: 2em;
+  min-height: 1.25em;
+  line-height: 1.25;
 }
 .calculator__dial {
   display: grid;

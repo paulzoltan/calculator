@@ -6,6 +6,7 @@ import classNames from 'classnames'
 
 const Calculator = () => {
   const [expression, setExpression] = useState('')
+  const [history, setHistory] = useState('')
 
   const isLastElementIn = (arr: string[]) =>
     arr.includes(expression[expression.length - 1])
@@ -13,16 +14,13 @@ const Calculator = () => {
   const isPenultimateElementIn = (arr: string[]) =>
     arr.includes(expression[expression.length - 2])
 
-  const skip = () => {}
-
-  const canBecomeValid = (expr: string) => {
+  const canBecomeValidExpression = (expr: string) => {
     try {
       evaluate(expr)
       return true
     } catch (err: unknown) {
       if (err instanceof Error) {
-        console.log(err.message)
-        console.log(expr.length)
+        // console.log(err.message)
         if (
           err.message.startsWith('Unexpected end of expression') ||
           err.message.startsWith(
@@ -36,7 +34,7 @@ const Calculator = () => {
   }
 
   const setExpressionIfCanBecomeValid = (expression: string) => {
-    if (canBecomeValid(expression)) {
+    if (canBecomeValidExpression(expression)) {
       setExpression(expression)
     }
   }
@@ -58,69 +56,120 @@ const Calculator = () => {
     }
   }
 
-  const appendMinus = (element: string) => {
+  const appendMinus = () => {
     if (isLastElementIn(['+', '-'])) {
-      replaceLastElement(element)
+      replaceLastElement('-')
     } else {
-      append(element)
+      append('-')
     }
   }
 
-  const appendPlus = (element: string) => {
+  const appendPlus = () => {
     if (isLastElementIn(['+', '*', '/'])) {
-      replaceLastElement(element)
+      replaceLastElement('+')
     } else if (isLastElementIn(['-'])) {
       if (!isPenultimateElementIn(['/', '*'])) {
-        replaceLastElement(element)
+        replaceLastElement('+')
       }
     } else {
-      append(element)
+      append('+')
     }
   }
-  const sqr = () => {
-    append('^')
-  }
-  const sqrt = () => {
-    append('sqrt(')
+
+  const controller = (symbol: string) => {
+    const isFirtActionAfterEvaluation = history[history.length - 1] === '='
+
+    if (symbol !== '=' && isFirtActionAfterEvaluation) {
+      setHistory(`Ans = ${expression}`)
+    }
+
+    if (
+      [
+        '0',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        '(',
+        ')',
+        '.',
+      ].includes(symbol)
+    ) {
+      if (isFirtActionAfterEvaluation) {
+        setExpressionIfCanBecomeValid(symbol)
+      } else {
+        append(symbol)
+      }
+    } else if (['*', '/'].includes(symbol)) {
+      appendOperator(symbol)
+    } else if (symbol === '-') {
+      appendMinus()
+    } else if (symbol === '+') {
+      appendPlus()
+    } else if (symbol === 'sqr') {
+      append('^')
+    } else if (symbol === 'sqrt') {
+      append('sqrt(')
+    } else if (symbol === '=') {
+      let result
+      try {
+        result = evaluate(expression)
+        setHistory(expression + ' =')
+        setExpression(result.toString())
+      } catch {
+        console.log('Not valid expression')
+      }
+    } else if (symbol === 'C') {
+      setExpression('')
+      setHistory('')
+    }
   }
 
-  const actions: [string | JSX.Element, (...args: any[]) => void, string?][] = [
-    ['', skip],
-    ['(', () => append('(')],
-    [')', () => append(')')],
-    ['%', skip],
-    ['C', () => setExpression('')],
-    ['', skip],
-    ['7', () => append('7'), 'digit'],
-    ['8', () => append('8'), 'digit'],
-    ['9', () => append('9'), 'digit'],
-    ['÷', () => appendOperator('/')],
-    ['', skip],
-    ['4', () => append('4'), 'digit'],
-    ['5', () => append('5'), 'digit'],
-    ['6', () => append('6'), 'digit'],
-    ['×', () => appendOperator('*')],
-    ['√', () => sqrt()],
-    ['1', () => append('1'), 'digit'],
-    ['2', () => append('2'), 'digit'],
-    ['3', () => append('3'), 'digit'],
-    ['-', () => appendMinus('-')],
+  const actions: [string | JSX.Element, string, string?][] = [
+    ['', ''],
+    ['(', '('],
+    [')', ')'],
+    ['%', ''],
+    ['C', 'C'],
+    ['', ''],
+    ['7', '7', 'digit'],
+    ['8', '8', 'digit'],
+    ['9', '9', 'digit'],
+    ['÷', '/'],
+    ['', ''],
+    ['4', '4', 'digit'],
+    ['5', '5', 'digit'],
+    ['6', '6', 'digit'],
+    ['×', '*'],
+    ['√', 'sqrt'],
+    ['1', '1', 'digit'],
+    ['2', '2', 'digit'],
+    ['3', '3', 'digit'],
+    ['-', '-'],
     [
       <>
         x<sup>2</sup>
       </>,
-      () => sqr(),
+      'sqr',
     ],
-    ['0', () => append('0'), 'digit'],
-    ['.', () => append('.'), 'point'],
-    ['=', () => console.log(evaluate(expression)), 'equals-sign'],
-    ['+', () => appendPlus('+')],
+    ['0', '0', 'digit'],
+    ['.', '.', 'point'],
+    ['=', '=', 'equals-sign'],
+    ['+', '+'],
   ]
 
   return (
     <div className='calculator'>
       <div className='calculator__display'>
-        <div className='calculator__display__previous'>{expression}</div>
+        <div className='calculator__display__current'>{expression}</div>
+        <div className='calculator__display__previous'>
+          <DisplayMath expression={history} />
+        </div>
         <div className='calculator__display__current'>
           <DisplayMath expression={expression} />
         </div>
@@ -128,9 +177,9 @@ const Calculator = () => {
       <div className='calculator__dial'>
         {actions.map(
           (
-            [symbol, handleClick, className]: [
-              symbol: string | JSX.Element,
-              handleClick: (...args: any[]) => void,
+            [label, symbol, className]: [
+              label: string | JSX.Element,
+              symbol: string,
               className?: string
             ],
             index
@@ -139,10 +188,10 @@ const Calculator = () => {
               className={classNames('btn', 'calculator__dial__btn', {
                 [`calculator__dial__btn--${className}`]: className,
               })}
-              onClick={handleClick}
+              onClick={() => controller(symbol)}
               key={index}
             >
-              {symbol}
+              {label}
             </button>
           )
         )}
