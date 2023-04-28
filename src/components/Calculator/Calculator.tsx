@@ -99,6 +99,7 @@ const Calculator = () => {
         '(',
         ')',
         '.',
+        '%',
       ].includes(symbol)
     ) {
       if (isFirtActionAfterEvaluation) {
@@ -135,7 +136,7 @@ const Calculator = () => {
     ['', ''],
     ['(', '('],
     [')', ')'],
-    ['%', ''],
+    ['%', '%'],
     ['C', 'C'],
     ['', ''],
     ['7', '7', 'digit'],
