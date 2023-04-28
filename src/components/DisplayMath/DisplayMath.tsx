@@ -1,3 +1,5 @@
+import { getDecimalSeparator } from '../../utils/utils'
+
 const format = (expr: string) => {
   const multiReplace = (str: string, rules: [string, string][]) =>
     rules.reduce((actStr, [from, to]) => actStr.replaceAll(from, to), str)
@@ -16,6 +18,28 @@ const format = (expr: string) => {
 
   const formatted = multiReplace(expr, replaceRules)
   return formatted
+}
+
+const separate = (expr: string) => {
+  const separateANumber = (literal: string) => {
+    var lastLetter = literal[literal.length - 1]
+    const options = {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 20,
+    }
+    if (lastLetter === '.') {
+      return (
+        Number(literal.slice(0, -1)).toLocaleString(
+          navigator.language,
+          options
+        ) + getDecimalSeparator()
+      )
+    }
+    return Number(literal).toLocaleString(navigator.language, options)
+  }
+
+  const separated = expr.replaceAll(/[0-9|.]+/g, separateANumber)
+  return separated
 }
 
 const convert: (expr: string) => JSX.Element = (expr) => {
@@ -59,6 +83,6 @@ const convert: (expr: string) => JSX.Element = (expr) => {
 }
 
 const DisplayMath = ({ expression }: { expression: string }) => {
-  return convert(format(expression))
+  return convert(separate(format(expression)))
 }
 export default DisplayMath

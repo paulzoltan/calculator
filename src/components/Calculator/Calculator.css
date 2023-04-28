@@ -8,15 +8,18 @@
   text-align: right;
   margin-bottom: 2.25em;
 }
-.calculator__display__previous {
-  color: #8d8d95;
+
+.calculator__display__previous,
+.calculator__display__current {
   min-height: 1.25em;
   line-height: 1.25;
+  white-space: pre-wrap;
+}
+.calculator__display__previous {
+  color: #8d8d95;
 }
 .calculator__display__current {
   font-size: 2em;
-  min-height: 1.25em;
-  line-height: 1.25;
 }
 .calculator__dial {
   display: grid;

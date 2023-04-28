@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { evaluate } from 'mathjs'
 import DisplayMath from '../DisplayMath'
 import classNames from 'classnames'
+import { getDecimalSeparator } from '../../utils/utils'
 
 const Calculator = () => {
   const [expression, setExpression] = useState('')
@@ -158,7 +159,7 @@ const Calculator = () => {
       'sqr',
     ],
     ['0', '0', 'digit'],
-    ['.', '.', 'point'],
+    [getDecimalSeparator(), '.', 'point'],
     ['=', '=', 'equals-sign'],
     ['+', '+'],
   ]
@@ -196,6 +197,7 @@ const Calculator = () => {
           )
         )}
       </div>
+      {navigator.language}
     </div>
   )
 }
