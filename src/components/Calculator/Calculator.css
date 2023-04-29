@@ -1,5 +1,6 @@
 .calculator {
-  margin: 5em auto;
+  font-size: 1.2em;
+  margin: 0 auto;
   width: 20em;
   display: flex;
   flex-direction: column;
@@ -26,6 +27,7 @@
   grid-template-rows: repeat(5, auto);
   grid-template-columns: repeat(5, auto);
   gap: 0.5em;
+  position: relative;
 }
 .calculator__dial__btn {
   background-color: #d6d9e3;
@@ -47,4 +49,12 @@
 .calculator__dial__btn--equals-sign {
   background-color: #2255ff;
   color: #fff;
+}
+.calculator__dial__btn--memory {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.calculator__dial__btn--memory:disabled {
+  color: #a4a8b5;
 }

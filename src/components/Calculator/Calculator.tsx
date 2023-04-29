@@ -1,13 +1,19 @@
 import './Calculator.css'
 import { useState } from 'react'
 import { evaluate } from 'mathjs'
-import DisplayMath from '../DisplayMath'
+import { DisplayMath } from '..'
 import classNames from 'classnames'
-import { getDecimalSeparator } from '../../utils/utils'
+import { getDecimalSeparator } from '../../utils'
+import { TbArrowNarrowRight, TbArrowNarrowLeft } from 'react-icons/tb'
+import { useCollection } from '../../hooks'
+import { MemoryDropdown } from '..'
 
 const Calculator = () => {
   const [expression, setExpression] = useState('')
   const [history, setHistory] = useState('')
+  const isFirtActionAfterEvaluation = history[history.length - 1] === '='
+  const [memory, pushMem, removeMem] = useCollection<string>()
+  const [isMemoryDropdownVisible, setIsMemoryDropdownVisible] = useState(false)
 
   const isLastElementIn = (arr: string[]) =>
     arr.includes(expression[expression.length - 1])
@@ -31,6 +37,7 @@ const Calculator = () => {
           return true
         }
       }
+      return false
     }
   }
 
@@ -78,8 +85,6 @@ const Calculator = () => {
   }
 
   const controller = (symbol: string) => {
-    const isFirtActionAfterEvaluation = history[history.length - 1] === '='
-
     if (symbol !== '=' && isFirtActionAfterEvaluation) {
       setHistory(`Ans = ${expression}`)
     }
@@ -129,21 +134,49 @@ const Calculator = () => {
     } else if (symbol === 'C') {
       setExpression('')
       setHistory('')
+    } else if (symbol === 'mIn') {
+      pushMem(expression)
+    } else if (symbol === 'mOut') {
+      setIsMemoryDropdownVisible(true)
     }
   }
 
-  const actions: [string | JSX.Element, string, string?][] = [
-    ['', ''],
+  type buttonDataT = [
+    label: string | JSX.Element,
+    symbol: string,
+    className?: string,
+    buttonProps?: React.DetailedHTMLProps<
+      React.ButtonHTMLAttributes<HTMLButtonElement>,
+      HTMLButtonElement
+    >
+  ]
+
+  const buttonData: buttonDataT[] = [
+    [
+      <>
+        M <TbArrowNarrowRight />
+      </>,
+      'mOut',
+      'memory',
+      { disabled: memory.length === 0 },
+    ],
     ['(', '('],
     [')', ')'],
-    ['%', '%'],
-    ['C', 'C'],
     ['', ''],
+    ['C', 'C'],
+    [
+      <>
+        M <TbArrowNarrowLeft />
+      </>,
+      'mIn',
+      'memory',
+      { disabled: !isFirtActionAfterEvaluation },
+    ],
     ['7', '7', 'digit'],
     ['8', '8', 'digit'],
     ['9', '9', 'digit'],
     ['÷', '/'],
-    ['', ''],
+    ['%', '%'],
     ['4', '4', 'digit'],
     ['5', '5', 'digit'],
     ['6', '6', 'digit'],
@@ -155,7 +188,7 @@ const Calculator = () => {
     ['-', '-'],
     [
       <>
-        x<sup>2</sup>
+        x<sup>y</sup>
       </>,
       'sqr',
     ],
@@ -177,27 +210,29 @@ const Calculator = () => {
         </div>
       </div>
       <div className='calculator__dial'>
-        {actions.map(
-          (
-            [label, symbol, className]: [
-              label: string | JSX.Element,
-              symbol: string,
-              className?: string
-            ],
-            index
-          ) => (
+        {buttonData.map(
+          ([label, symbol, className, buttonProps]: buttonDataT, index) => (
             <button
               className={classNames('btn', 'calculator__dial__btn', {
                 [`calculator__dial__btn--${className}`]: className,
               })}
               onClick={() => controller(symbol)}
               key={index}
+              {...buttonProps}
             >
               {label}
             </button>
           )
         )}
+        <MemoryDropdown
+          memory={memory}
+          visible={isMemoryDropdownVisible}
+          onSelectItem={append}
+          onRemoveItem={removeMem}
+          onClose={() => setIsMemoryDropdownVisible(false)}
+        />
       </div>
+
       {navigator.language}
     </div>
   )

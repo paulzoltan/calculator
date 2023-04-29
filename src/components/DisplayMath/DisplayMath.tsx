@@ -1,4 +1,4 @@
-import { getDecimalSeparator } from '../../utils/utils'
+import { getDecimalSeparator, localize } from '../../utils'
 
 const format = (expr: string) => {
   const multiReplace = (str: string, rules: [string, string][]) =>
@@ -23,19 +23,10 @@ const format = (expr: string) => {
 const separate = (expr: string) => {
   const separateANumber = (literal: string) => {
     var lastLetter = literal[literal.length - 1]
-    const options = {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 20,
-    }
     if (lastLetter === '.') {
-      return (
-        Number(literal.slice(0, -1)).toLocaleString(
-          navigator.language,
-          options
-        ) + getDecimalSeparator()
-      )
+      return localize(literal.slice(0, -1)) + getDecimalSeparator()
     }
-    return Number(literal).toLocaleString(navigator.language, options)
+    return localize(literal)
   }
 
   const separated = expr.replaceAll(/[0-9|.]+/g, separateANumber)
