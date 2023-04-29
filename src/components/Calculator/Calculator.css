@@ -10,16 +10,16 @@
   margin-bottom: 2.25em;
 }
 
-.calculator__display__previous,
-.calculator__display__current {
+.calculator__display__secondary,
+.calculator__display__primary {
   min-height: 1.25em;
   line-height: 1.25;
   white-space: pre-wrap;
 }
-.calculator__display__previous {
+.calculator__display__secondary {
   color: #8d8d95;
 }
-.calculator__display__current {
+.calculator__display__primary {
   font-size: 2em;
 }
 .calculator__dial {
@@ -50,7 +50,8 @@
   background-color: #2255ff;
   color: #fff;
 }
-.calculator__dial__btn--memory {
+.calculator__dial__btn--memory,
+.calculator__dial__btn--back {
   display: flex;
   justify-content: center;
   align-items: center;

@@ -7,13 +7,25 @@ import { getDecimalSeparator } from '../../utils'
 import { TbArrowNarrowRight, TbArrowNarrowLeft } from 'react-icons/tb'
 import { useCollection } from '../../hooks'
 import { MemoryDropdown } from '..'
+import { BsBackspace } from 'react-icons/bs'
 
 const Calculator = () => {
   const [expression, setExpression] = useState('')
-  const [history, setHistory] = useState('')
-  const isFirtActionAfterEvaluation = history[history.length - 1] === '='
-  const [memory, pushMem, removeMem] = useCollection<string>()
+  const [extraInfo, setExtraInfo] = useState('')
+  const isFirtActionAfterEvaluation = extraInfo[extraInfo.length - 1] === '='
+  const {
+    collection: memory,
+    push: memoryPush,
+    remove: memoryRemove,
+  } = useCollection<string>()
   const [isMemoryDropdownVisible, setIsMemoryDropdownVisible] = useState(false)
+
+  const {
+    push: historyPush,
+    pop: historyPop,
+    clear: historyClear,
+    lastElement: lastElementOfHistory,
+  } = useCollection<string>()
 
   const isLastElementIn = (arr: string[]) =>
     arr.includes(expression[expression.length - 1])
@@ -41,9 +53,10 @@ const Calculator = () => {
     }
   }
 
-  const setExpressionIfCanBecomeValid = (expression: string) => {
-    if (canBecomeValidExpression(expression)) {
-      setExpression(expression)
+  const setExpressionIfCanBecomeValid = (expr: string) => {
+    if (canBecomeValidExpression(expr)) {
+      historyPush(expression)
+      setExpression(expr)
     }
   }
 
@@ -86,7 +99,7 @@ const Calculator = () => {
 
   const controller = (symbol: string) => {
     if (symbol !== '=' && isFirtActionAfterEvaluation) {
-      setHistory(`Ans = ${expression}`)
+      setExtraInfo(`Ans = ${expression}`)
     }
 
     if (
@@ -126,18 +139,24 @@ const Calculator = () => {
       let result
       try {
         result = evaluate(expression)
-        setHistory(expression + ' =')
+        setExtraInfo(expression + ' =')
         setExpression(result.toString())
       } catch {
         console.log('Not valid expression')
       }
     } else if (symbol === 'C') {
       setExpression('')
-      setHistory('')
+      setExtraInfo('')
+      historyClear()
     } else if (symbol === 'mIn') {
-      pushMem(expression)
+      memoryPush(expression)
     } else if (symbol === 'mOut') {
       setIsMemoryDropdownVisible(true)
+    } else if (symbol === 'back') {
+      if (lastElementOfHistory !== undefined) {
+        setExpression(lastElementOfHistory)
+        historyPop()
+      }
     }
   }
 
@@ -162,7 +181,13 @@ const Calculator = () => {
     ],
     ['(', '('],
     [')', ')'],
-    ['', ''],
+    [
+      <>
+        <BsBackspace />
+      </>,
+      'back',
+      'back',
+    ],
     ['C', 'C'],
     [
       <>
@@ -201,11 +226,11 @@ const Calculator = () => {
   return (
     <div className='calculator'>
       <div className='calculator__display'>
-        <div className='calculator__display__current'>{expression}</div>
-        <div className='calculator__display__previous'>
-          <DisplayMath expression={history} />
+        <div className='calculator__display__primary'>{expression}</div>
+        <div className='calculator__display__secondary'>
+          <DisplayMath expression={extraInfo} />
         </div>
-        <div className='calculator__display__current'>
+        <div className='calculator__display__primary'>
           <DisplayMath expression={expression} />
         </div>
       </div>
@@ -228,11 +253,10 @@ const Calculator = () => {
           memory={memory}
           visible={isMemoryDropdownVisible}
           onSelectItem={append}
-          onRemoveItem={removeMem}
+          onRemoveItem={memoryRemove}
           onClose={() => setIsMemoryDropdownVisible(false)}
         />
       </div>
-
       {navigator.language}
     </div>
   )
