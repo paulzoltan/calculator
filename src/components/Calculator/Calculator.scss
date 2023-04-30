@@ -1,20 +1,20 @@
 .calculator {
+  font-size: 1.2em;
   margin: auto;
   width: 100%;
   max-width: 30em;
   display: flex;
   flex-direction: column;
-  height: clamp(245px, 100%, 300px);
+  height: clamp(15.3125em, 100%, 18.75em);
   vertical-align: middle;
-  // background-color: pink;
   padding: 0.5em;
   gap: 0.5em;
-  // box-shadow: inset 0 0 10em rgb(61, 29, 190);
+  transition: background-color 0.4s;
 }
 .calculator__display {
   text-align: right;
-  background: white;
   padding-inline: 0.25em;
+  padding-top: 0.25em;
 }
 .calculator__display__secondary,
 .calculator__display__primary {
@@ -24,9 +24,6 @@
   overflow-x: auto;
   overflow-y: hidden;
 }
-.calculator__display__secondary {
-  color: #8d8d95;
-}
 .calculator__display__primary {
   font-size: 2em;
 }
@@ -34,29 +31,16 @@
   display: grid;
   grid-template-rows: repeat(5, 1fr);
   grid-template-columns: repeat(5, 1fr);
-  gap: 0.5em;
+  gap: 0.4em;
   position: relative;
   height: 100%;
 }
 .calculator__dial__btn {
-  background-color: #d6d9e3;
   border-radius: 0.25em;
   text-align: center;
 }
-.calculator__dial__btn:active {
-  outline: 1px solid #8d8d95;
-  box-shadow: 0 0 0.5em 0 #0005;
-}
 .calculator__dial__btn:hover {
   cursor: pointer;
-}
-.calculator__dial__btn--digit,
-.calculator__dial__btn--point {
-  background-color: #eaecf2;
-}
-.calculator__dial__btn--equals-sign {
-  background-color: #2255ff;
-  color: #fff;
 }
 .calculator__dial__btn--memory,
 .calculator__dial__btn--back {
@@ -64,11 +48,8 @@
   justify-content: center;
   align-items: center;
 }
-.calculator__dial__btn--memory:disabled {
-  color: #a4a8b5;
-}
 .calculator.mobile {
-  height: clamp(310px, 100%, 400px);
+  height: clamp(19.375em, 100%, 25em);
 }
 
 .mobile {

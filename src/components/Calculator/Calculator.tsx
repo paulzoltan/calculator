@@ -1,4 +1,5 @@
 import './Calculator.scss'
+import './themes.scss'
 import { useState } from 'react'
 import { evaluate } from 'mathjs'
 import { DisplayMath } from '..'
@@ -11,7 +12,7 @@ import { BsBackspace } from 'react-icons/bs'
 import { useComponentSize } from 'react-use-size'
 import { useScrollRight } from '../../hooks'
 
-const Calculator = () => {
+const Calculator = ({ theme }: { theme: string }) => {
   const [expression, setExpression] = useState('')
   const [extraInfo, setExtraInfo] = useState('')
   const isFirtActionAfterEvaluation = extraInfo[extraInfo.length - 1] === '='
