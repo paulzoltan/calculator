@@ -1,4 +1,4 @@
-import './Calculator.css'
+import './Calculator.scss'
 import { useState } from 'react'
 import { evaluate } from 'mathjs'
 import { DisplayMath } from '..'
@@ -8,6 +8,8 @@ import { TbArrowNarrowRight, TbArrowNarrowLeft } from 'react-icons/tb'
 import { useCollection } from '../../hooks'
 import { MemoryDropdown } from '..'
 import { BsBackspace } from 'react-icons/bs'
+import { useComponentSize } from 'react-use-size'
+import { useScrollRight } from '../../hooks'
 
 const Calculator = () => {
   const [expression, setExpression] = useState('')
@@ -26,6 +28,10 @@ const Calculator = () => {
     clear: historyClear,
     lastElement: lastElementOfHistory,
   } = useCollection<string>()
+
+  const { ref: calculatorRef, width } = useComponentSize()
+  const displayPrimaryRef = useScrollRight([expression])
+  const displaySecondaryRef = useScrollRight([expression])
 
   const isLastElementIn = (arr: string[]) =>
     arr.includes(expression[expression.length - 1])
@@ -224,13 +230,19 @@ const Calculator = () => {
   ]
 
   return (
-    <div className='calculator'>
+    <div
+      className={classNames('calculator', { mobile: width < 400 })}
+      ref={calculatorRef}
+    >
       <div className='calculator__display'>
-        <div className='calculator__display__primary'>{expression}</div>
-        <div className='calculator__display__secondary'>
+        {/* <div className='calculator__display__primary'>{expression}</div> */}
+        <div
+          className='calculator__display__secondary'
+          ref={displaySecondaryRef}
+        >
           <DisplayMath expression={extraInfo} />
         </div>
-        <div className='calculator__display__primary'>
+        <div className='calculator__display__primary' ref={displayPrimaryRef}>
           <DisplayMath expression={expression} />
         </div>
       </div>
@@ -238,6 +250,7 @@ const Calculator = () => {
         {buttonData.map(
           ([label, symbol, className, buttonProps]: buttonDataT, index) => (
             <button
+              id={`dial-btn-${index}`}
               className={classNames('btn', 'calculator__dial__btn', {
                 [`calculator__dial__btn--${className}`]: className,
               })}
@@ -257,7 +270,7 @@ const Calculator = () => {
           onClose={() => setIsMemoryDropdownVisible(false)}
         />
       </div>
-      {navigator.language}
+      {/* {navigator.language} */}
     </div>
   )
 }
